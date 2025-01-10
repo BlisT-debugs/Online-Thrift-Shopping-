@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>Our Products</h1>
+  </header>
+  
+<!-- Product List Section -->
+<section class="product-list">
+  <div class="product-item" onclick="openModal('images/sofa.jpeg', 'Vintage Sofa')">
+    <img src="images/sofa.jpeg" alt="Vintage Sofa">
+    <h3>Vintage Sofa</h3>
+    <p>$120 (Original: $400)</p>
+    <button onclick="addToCart('Vintage Sofa'); event.stopPropagation();">Add to Cart</button>
+  </div>
+  <div class="product-item" onclick="openModal('images/laptop.jpeg', 'Refurbished Laptop')">
+    <img src="images/laptop.jpeg" alt="Refurbished Laptop">
+    <h3>Refurbished Laptop</h3>
+    <p>$200 (Original: $700)</p>
+    <button onclick="addToCart('Refurbished Laptop'); event.stopPropagation();">Add to Cart</button>
+  </div>
+</section>
+
+<!-- Modal for Enlarged View -->
+<div id="modal" class="modal">
+  <span class="close" onclick="closeModal()">&times;</span>
+  <img class="modal-content" id="modal-img">
+  <div id="caption"></div>
+</div>
+
+  
+</body>
+</html>

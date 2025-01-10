@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Thrift Shopping</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+<button class="login-btn" onclick="login()">Login</button>
+
+  <!-- Header with Hamburger -->
+  <header>
+    <h1>Thrift Haven</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="diy.html">DIY Section</a>
+      <a href="cart.html">Cart</a>
+    </nav>
+
+    <form class="search-form" action="https://www.ebay.com/sch/i.html" method="get" target="_blank">
+      <input type="text" name="_nkw" placeholder="Search items" required>
+      <button type="submit">Search</button>
+    </form>
+    
+    
+
+    <!-- Hamburger Menu Icon -->
+    <div class="hamburger" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </header>
+
+  <!-- Banner -->
+  <section class="banner">
+    <h2>Find Unique Vintage & Refurbished Items!</h2>
+  </section>
+
+  <!-- Categories Section with Button -->
+  <section class="categories">
+    <h2 onclick="scrollToCategories()">Explore Categories</h2>
+    <div class="category-grid">
+      <div class="category-grid">
+        <button class="category" onclick="location.href='/products?category=electronics'">Electronics</button>
+        <button class="category" onclick="location.href='/products?category=furniture'">Furniture</button>
+        <button class="category" onclick="location.href='/products?category=apparel'">Apparel</button>
+        <button class="category" onclick="location.href='/products?category=books'">Books</button>
+        <button class="category" onclick="location.href='/products?category=vehicles'">Vehicles</button>
+      </div>
+  </section>
+
+  <!-- DIY Section with Background -->
+  <section class="diy-teaser">
+    <h2>DIY Upcycling Recipes</h2>
+    <p>Get creative with old items! <a href="diy.html">Explore Now</a></p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Online Thrift Shopping</p>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.querySelector('header nav');
+      nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function scrollToCategories() {
+      document.querySelector('.category-grid').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>

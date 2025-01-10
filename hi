@@ -1,0 +1,386 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
+public class RegistrationForm extends JFrame {
+
+    private JTextField firstNameField, lastNameField, emailField, rollNoField;
+    private JRadioButton maleRadioButton, femaleRadioButton;
+    private JButton registerButton, viewAllButton, updateButton, deleteButton, findButton, resetButton;
+    private BufferedImage backgroundImage;
+    private ButtonGroup genderGroup;
+
+    public RegistrationForm() {
+        try {
+            //background image
+            backgroundImage = ImageIO.read(new File("C:\\Users\\Lenovo Loq\\Desktop\\java\\images\\tp.jpg")); // Load your image file
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        setTitle("Registration Form");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(2400, 2400);
+        setLocationRelativeTo(null);
+
+        // Custom JPanel to paint background image and make text more visible
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        backgroundPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10); 
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        //making text visible
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(new Color(0, 0, 0, 150)); // Semi-transparent black background
+
+        JLabel firstNameLabel = new JLabel("First Name:");
+        firstNameLabel.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(firstNameLabel, gbc);
+
+        firstNameField = new JTextField(10);
+        gbc.gridx = 1;
+        formPanel.add(firstNameField, gbc);
+
+        JLabel lastNameLabel = new JLabel("Last Name:");
+        lastNameLabel.setForeground(Color.WHITE);
+        gbc.gridx = 2;
+        formPanel.add(lastNameLabel, gbc);
+
+        lastNameField = new JTextField(10);
+        gbc.gridx = 3;
+        formPanel.add(lastNameField, gbc);
+
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(emailLabel, gbc);
+
+        emailField = new JTextField(20);
+        gbc.gridwidth = 3;
+        gbc.gridx = 1;
+        formPanel.add(emailField, gbc);
+        gbc.gridwidth = 1;
+
+        JLabel genderLabel = new JLabel("Gender:");
+        genderLabel.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        formPanel.add(genderLabel, gbc);
+
+        maleRadioButton = new JRadioButton("Male");
+        femaleRadioButton = new JRadioButton("Female");
+
+        maleRadioButton.setOpaque(true);//making radio buttons opaque
+        femaleRadioButton.setOpaque(true);
+        maleRadioButton.setBackground(new Color(100, 100, 100)); //background color
+        femaleRadioButton.setBackground(new Color(100, 100, 100));
+        maleRadioButton.setForeground(Color.WHITE); //text color
+        femaleRadioButton.setForeground(Color.WHITE); //text color
+
+        genderGroup = new ButtonGroup();
+        genderGroup.add(maleRadioButton);
+        genderGroup.add(femaleRadioButton);
+
+        gbc.gridx = 1;
+        formPanel.add(maleRadioButton, gbc);
+
+        gbc.gridx = 2;
+        formPanel.add(femaleRadioButton, gbc);
+
+        JLabel rollNoLabel = new JLabel("Roll No:");
+        rollNoLabel.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        formPanel.add(rollNoLabel, gbc);
+
+        rollNoField = new JTextField(10);
+        gbc.gridx = 1;
+        formPanel.add(rollNoField, gbc);
+
+        //Click buttons        
+        findButton = new JButton("Find");
+        gbc.gridx = 2;
+        formPanel.add(findButton, gbc);
+
+        resetButton = new JButton("Reset");
+        gbc.gridx = 3;
+        formPanel.add(resetButton, gbc);
+
+        registerButton = new JButton("Register");
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        formPanel.add(registerButton, gbc);
+
+        viewAllButton = new JButton("View All");
+        gbc.gridx = 1;
+        formPanel.add(viewAllButton, gbc);
+
+        updateButton = new JButton("Update");
+        gbc.gridx = 2;
+        formPanel.add(updateButton, gbc);
+
+        deleteButton = new JButton("Delete");
+        gbc.gridx = 3;
+        formPanel.add(deleteButton, gbc);
+
+        // Add formPanel to the backgroundPanel
+        backgroundPanel.add(formPanel);
+
+        // Add backgroundPanel to the JFrame
+        add(backgroundPanel);
+
+        // Action Listeners
+        registerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                register();
+            }
+        });
+
+        viewAllButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewAll();
+            }
+        });
+
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                update();
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                delete();
+            }
+        });
+
+        findButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                find();
+            }
+        });
+
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resetFields();
+            }
+        });
+
+        setVisible(true);
+    }
+
+    private void register() {
+        String firstName = firstNameField.getText();
+        String lastName = lastNameField.getText();
+        String email = emailField.getText();
+        String gender = maleRadioButton.isSelected() ? "Male" : "Female";
+        int roll_no = Integer.parseInt(rollNoField.getText());
+
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/university", "root", "root");
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO registrationForm VALUES(?,?,?,?,?);");
+            ps.setString(1, firstName);
+            ps.setString(2, lastName);
+            ps.setString(3, email);
+            ps.setString(4, gender);
+            ps.setInt(5, roll_no);
+
+            ps.execute();
+            JOptionPane.showMessageDialog(this, "Registration Successful!");
+            resetFields();  
+            connection.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    }
+
+    private void viewAll() {
+        JFrame tableFrame = new JFrame("All Registrations");
+        tableFrame.setSize(600, 400);
+        tableFrame.setLayout(new BorderLayout());
+
+        //dropdown for sorting options
+        String[] sortOptions = {"Sort by Roll No", "Sort by Name"};
+        JComboBox<String> sortComboBox = new JComboBox<>(sortOptions);
+
+        // Table to display data
+        JTable table = new JTable();
+        JScrollPane scrollPane = new JScrollPane(table);
+        tableFrame.add(scrollPane, BorderLayout.CENTER);
+
+        // Add sort dropdown 
+        tableFrame.add(sortComboBox, BorderLayout.NORTH);
+
+        sortComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedSortOption = (String) sortComboBox.getSelectedItem();
+                if (selectedSortOption.equals("Sort by Roll No")) {
+                    loadSortedData(table, "roll_no");
+                } else if (selectedSortOption.equals("Sort by Name")) {
+                    loadSortedData(table, "first_name");
+                }
+            }
+        });
+
+        //sorted by Roll
+        loadSortedData(table, "roll_no");
+
+        tableFrame.setVisible(true);
+    }
+
+    private void loadSortedData(JTable table, String sortByColumn) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/university", "root", "root")) {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM registrationForm ORDER BY " + sortByColumn + " ASC");
+            ResultSet rs = ps.executeQuery();
+
+            //model to display the sorted results
+            String[] columnNames = {"First Name", "Last Name", "Email", "Gender", "Roll No"};
+            DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+
+            while (rs.next()) {
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String email = rs.getString("email");
+                String gender = rs.getString("gender");
+                int rollNo = rs.getInt("roll_no");
+
+                Object[] rowData = {firstName, lastName, email, gender, rollNo};
+                model.addRow(rowData);
+            }
+
+            // Update model with the sorted data
+            table.setModel(model);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }
+
+    private void update() {
+        String firstName = firstNameField.getText();
+        String lastName = lastNameField.getText();
+        String email = emailField.getText();
+        String gender = maleRadioButton.isSelected() ? "Male" : "Female";
+        int rollno = Integer.parseInt(rollNoField.getText());
+
+        String updateQuery = "UPDATE registrationForm SET first_name=?, last_name=?, email=?, gender=? WHERE roll_no=?";
+
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/university", "root", "root");
+             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setString(3, email);
+            preparedStatement.setString(4, gender);
+            preparedStatement.setInt(5, rollno);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, "Record updated successfully!");
+                resetFields(); 
+            } else {
+                JOptionPane.showMessageDialog(this, "No record found with the specified roll number.");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+
+    }
+
+    private void delete() {
+        String rollno = rollNoField.getText();
+
+        String deleteQuery = "DELETE FROM registrationForm WHERE roll_no = ?";
+
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/university", "root", "root");
+             PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
+
+            preparedStatement.setString(1, rollno);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, "Record deleted successfully!");
+                resetFields();  
+            } else {
+                JOptionPane.showMessageDialog(this, "No record found with the specified roll number.");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    }
+
+    private void find() {
+        String rollNo = rollNoField.getText();
+
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/university", "root", "root");
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM registrationForm WHERE roll_no = ?")) {
+
+            preparedStatement.setString(1, rollNo);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                String firstName = resultSet.getString("first_name");
+                String lastName = resultSet.getString("last_name");
+                String email = resultSet.getString("email");
+                String gender = resultSet.getString("gender");
+
+                firstNameField.setText(firstName);
+                lastNameField.setText(lastName);
+                emailField.setText(email);
+
+                if (gender.equalsIgnoreCase("male")) {
+                    maleRadioButton.setSelected(true);
+                } else {
+                    femaleRadioButton.setSelected(true);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "No record found with the specified roll number.");
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+
+    }
+
+    private void resetFields() {
+        firstNameField.setText("");
+        lastNameField.setText("");
+        emailField.setText("");
+        rollNoField.setText("");
+        genderGroup.clearSelection();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new RegistrationForm();
+            }
+        });
+    }
+}
